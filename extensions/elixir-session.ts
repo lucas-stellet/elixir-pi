@@ -25,8 +25,6 @@ export default function elixirSessionExtension(pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     if (!(await isElixirProject(ctx.cwd))) return;
 
-    ctx.ui.setStatus("elixir-pi", "ctrl+shift+e project status");
-
     // Cache git branch
     const gitResult = await pi.exec("git", ["branch", "--show-current"], { cwd: ctx.cwd }).catch(() => undefined);
     if (gitResult && gitResult.code === 0 && gitResult.stdout.trim()) {

@@ -233,7 +233,7 @@ export default function elixirExpertExtension(pi: ExtensionAPI) {
 
   pi.on("session_start", async (_event, ctx) => {
     if (!(await findMixRoot(ctx.cwd, ctx.cwd))) return;
-    ctx.ui.setStatus("pi-expert", "🔮 Expert ready");
+    ctx.ui.setStatus("pi-expert", "🔮 \x1b[35mExpert ready (ctrl+shift+e)\x1b[0m");
   });
 
   pi.on("session_shutdown", async () => {

@@ -27,13 +27,13 @@ export default function mixFormatExtension(pi: ExtensionAPI) {
     const absolutePath = resolveFromCwd(filePath, ctx.cwd);
     if (!(await exists(absolutePath))) return undefined;
 
-    ctx.ui.setStatus("pi-elixir", "mix format");
+    ctx.ui.setStatus("elixir-pi", "mix format");
     const result = await runMix(projectRoot, ["format", absolutePath], {
       cwd: projectRoot,
       timeoutMs: DEFAULT_SHORT_TIMEOUT_MS,
       signal: ctx.signal,
     });
-    ctx.ui.setStatus("pi-elixir", "");
+    ctx.ui.setStatus("elixir-pi", "");
 
     const report = formatCommandReport(`mix format ${filePath}`, result);
 

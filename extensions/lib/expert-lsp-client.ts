@@ -183,7 +183,7 @@ function splitExpertCommandFromEnv(): { command: string; args: string[] } {
 function makeInitializeParams(root: string): JsonObject {
   return {
     processId: process.pid,
-    clientInfo: { name: "pi-elixir", version: "0.3.0" },
+    clientInfo: { name: "elixir-pi", version: "0.3.0" },
     locale: "en",
     rootPath: root,
     rootUri: rootUri(root),
@@ -437,6 +437,24 @@ export class ExpertLspSession {
       diagnosticFiles: this.diagnostics.size,
       log: [...this.log],
     };
+  }
+
+  diagnosticCounts(): { errors: number; warnings: number; infos: number; hints: number } {
+    let errors = 0;
+    let warnings = 0;
+    let infos = 0;
+    let hints = 0;
+    for (const diagnostics of this.diagnostics.values()) {
+      for (const d of diagnostics) {
+        switch (d.severity) {
+          case 1: errors++; break;
+          case 2: warnings++; break;
+          case 3: infos++; break;
+          case 4: hints++; break;
+        }
+      }
+    }
+    return { errors, warnings, infos, hints };
   }
 
   async start(signal?: AbortSignal): Promise<void> {
@@ -1075,6 +1093,21 @@ export async function getExpertSession(cwd: string, fileOrDir?: string): Promise
 
 export function getExpertSessions(): ExpertSessionStatus[] {
   return [...sessions.values()].map((session) => session.status());
+}
+
+export function getExpertDiagnosticCounts(): { errors: number; warnings: number; infos: number; hints: number } {
+  let errors = 0;
+  let warnings = 0;
+  let infos = 0;
+  let hints = 0;
+  for (const session of sessions.values()) {
+    const counts = session.diagnosticCounts();
+    errors += counts.errors;
+    warnings += counts.warnings;
+    infos += counts.infos;
+    hints += counts.hints;
+  }
+  return { errors, warnings, infos, hints };
 }
 
 export async function shutdownExpertSessions(): Promise<void> {

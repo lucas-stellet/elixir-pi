@@ -16,13 +16,13 @@ Pi package for Elixir projects: Mix post-edit hooks, Expert LSP bridge, commands
 
 ```bash
 # Global (all projects)
-pi install /path/to/pi-elixir
+pi install /path/to/elixir-pi
 
 # Project-local (shareable via .pi/settings.json)
-pi install -l /path/to/pi-elixir
+pi install -l /path/to/elixir-pi
 
 # Try without installing
-pi -e /path/to/pi-elixir
+pi -e /path/to/elixir-pi
 ```
 
 ## Prerequisites
@@ -33,7 +33,7 @@ pi -e /path/to/pi-elixir
 ## Structure
 
 ```
-pi-elixir/
+elixir-pi/
 ├── README.md
 ├── package.json
 ├── extensions/
@@ -148,7 +148,7 @@ In `.pi/settings.json`:
 {
   "packages": [
     {
-      "source": "/path/to/pi-elixir",
+      "source": "/path/to/elixir-pi",
       "extensions": [
         "extensions/mix-format.ts",
         "extensions/elixir-tools.ts",

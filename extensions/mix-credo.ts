@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { recordCredo } from "./lib/project-health.ts";
 import {
   appendTextContent,
   credoAvailable,
@@ -48,15 +49,17 @@ export default function mixCredoExtension(pi: ExtensionAPI) {
       }
     }
 
-    ctx.ui.setStatus("pi-elixir", "mix credo");
+    ctx.ui.setStatus("elixir-pi", "mix credo");
     const result = await runMix(projectRoot, ["credo"], {
       cwd: projectRoot,
       timeoutMs: DEFAULT_LONG_TIMEOUT_MS,
       signal: ctx.signal,
     });
-    ctx.ui.setStatus("pi-elixir", "");
+    ctx.ui.setStatus("elixir-pi", "");
 
     const report = formatCommandReport("mix credo", result);
+
+    recordCredo(result.ok, result.output);
 
     if (ctx.hasUI) {
       ctx.ui.notify(result.ok ? "Credo passed" : "mix credo found issues", result.ok ? "info" : "error");

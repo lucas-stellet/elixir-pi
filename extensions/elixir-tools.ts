@@ -1,6 +1,8 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { StringEnum } from "@mariozechner/pi-ai";
 import { Type } from "typebox";
+import { getExpertDiagnosticCounts, getExpertSessions } from "./lib/expert-lsp-client.ts";
+import { formatHealth, getHealth, recordCompile, recordCredo, recordTest } from "./lib/project-health.ts";
 import {
   beamProcessHasProjectCwd,
   commandLine,
@@ -17,7 +19,7 @@ import {
   runMix,
 } from "./lib/elixir-utils.ts";
 
-const Actions = ["doctor", "format", "compile", "credo", "test"] as const;
+const Actions = ["doctor", "format", "compile", "credo", "test", "status"] as const;
 type Action = (typeof Actions)[number];
 
 type ElixirMixParams = {
@@ -68,6 +70,7 @@ async function runAction(params: ElixirMixParams, cwd: string, signal?: AbortSig
       timeoutMs: DEFAULT_LONG_TIMEOUT_MS,
       signal,
     });
+    recordCompile(result.ok, result.output);
     const report = formatCommandReport("mix compile --warnings-as-errors", result);
     if (!result.ok) throw new Error(report);
     return report;
@@ -82,6 +85,7 @@ async function runAction(params: ElixirMixParams, cwd: string, signal?: AbortSig
       timeoutMs: DEFAULT_LONG_TIMEOUT_MS,
       signal,
     });
+    recordCredo(result.ok, result.output);
     const report = formatCommandReport("mix credo", result);
     if (!result.ok) throw new Error(report);
     return report;
@@ -93,9 +97,21 @@ async function runAction(params: ElixirMixParams, cwd: string, signal?: AbortSig
       timeoutMs: DEFAULT_LONG_TIMEOUT_MS,
       signal,
     });
+    recordTest(result.ok, result.output);
     const report = formatCommandReport(`mix test ${(params.args ?? []).join(" ")}`.trim(), result);
     if (!result.ok) throw new Error(report);
     return report;
+  }
+
+  if (params.action === "status") {
+    const sessions = getExpertSessions();
+    const connected = sessions.some((s) => s.initialized && s.running);
+    const counts = getExpertDiagnosticCounts();
+    return formatHealth(getHealth(), {
+      expertConnected: connected,
+      expertErrors: counts.errors,
+      expertWarnings: counts.warnings,
+    });
   }
 
   throw new Error(`Unknown action: ${params.action}`);
@@ -105,8 +121,8 @@ export default function elixirToolsExtension(pi: ExtensionAPI) {
   pi.registerTool({
     name: "elixir_mix",
     label: "Elixir Mix",
-    description: "Run common Elixir Mix project checks from the nearest mix.exs: doctor, format, compile --warnings-as-errors, credo, or test.",
-    promptSnippet: "Run Elixir Mix validation tasks from the nearest mix.exs: doctor, format, compile, credo, or test.",
+    description: "Run common Elixir Mix project checks from the nearest mix.exs: doctor, format, compile --warnings-as-errors, credo, test, or project health status.",
+    promptSnippet: "Run Elixir Mix validation tasks from the nearest mix.exs: doctor, format, compile, credo, test, or status.",
     promptGuidelines: [
       "Use elixir_mix after editing Elixir code to run the smallest relevant Mix validation task before claiming success.",
       "Use elixir_mix with action=compile after changes to .ex files unless a running BEAM process makes compilation unsafe.",
@@ -128,9 +144,9 @@ export default function elixirToolsExtension(pi: ExtensionAPI) {
   });
 
   pi.registerCommand("elixir", {
-    description: "Elixir helper: /elixir doctor|format [file]|compile|credo|test [args...]",
+    description: "Elixir helper: /elixir doctor|format [file]|compile|credo|test [args...]|status",
     getArgumentCompletions: (prefix: string) => {
-      const items = ["doctor", "format", "compile", "credo", "test"].map((value) => ({ value, label: value }));
+      const items = ["doctor", "format", "compile", "credo", "test", "status"].map((value) => ({ value, label: value }));
       const filtered = items.filter((item) => item.value.startsWith(prefix));
       return filtered.length > 0 ? filtered : null;
     },
@@ -139,7 +155,7 @@ export default function elixirToolsExtension(pi: ExtensionAPI) {
       const action = (parts.shift() ?? "doctor") as Action;
 
       if (!Actions.includes(action)) {
-        ctx.ui.notify("Usage: /elixir doctor|format [file]|compile|credo|test [args...]", "warning");
+        ctx.ui.notify("Usage: /elixir doctor|format [file]|compile|credo|test [args...]|status", "warning");
         return;
       }
 

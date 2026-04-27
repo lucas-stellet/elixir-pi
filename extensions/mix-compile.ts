@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { recordCompile } from "./lib/project-health.ts";
 import {
   appendTextContent,
   beamProcessHasProjectCwd,
@@ -31,15 +32,17 @@ export default function mixCompileExtension(pi: ExtensionAPI) {
       };
     }
 
-    ctx.ui.setStatus("pi-elixir", "mix compile");
+    ctx.ui.setStatus("elixir-pi", "mix compile");
     const result = await runMix(projectRoot, ["compile", "--warnings-as-errors"], {
       cwd: projectRoot,
       timeoutMs: DEFAULT_LONG_TIMEOUT_MS,
       signal: ctx.signal,
     });
-    ctx.ui.setStatus("pi-elixir", "");
+    ctx.ui.setStatus("elixir-pi", "");
 
     const report = formatCommandReport("mix compile --warnings-as-errors", result);
+
+    recordCompile(result.ok, result.output);
 
     if (ctx.hasUI) {
       ctx.ui.notify(result.ok ? "Compiled successfully" : "mix compile failed", result.ok ? "info" : "error");

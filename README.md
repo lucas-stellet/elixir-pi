@@ -1,4 +1,4 @@
-# pi-elixir
+# elixir-pi
 
 Pi package for Elixir projects: Mix post-edit hooks, Expert LSP bridge, commands, LLM tools, and Elixir/Phoenix/Ecto/OTP skills.
 

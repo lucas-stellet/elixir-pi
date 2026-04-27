@@ -4,7 +4,7 @@ Pi package for Elixir projects: Mix post-edit hooks, Expert LSP bridge, commands
 
 ## Features
 
-- **Auto-detection**: Detects Elixir projects via `mix.exs` and shows 🔮 Expert connection status
+- **Auto-detection**: Detects Elixir projects via `mix.exs`
 - **Post-edit hooks**: Runs `mix format`, `mix compile`, and `mix credo` automatically after file edits
 - **Project health**: Track compile, credo, and test results automatically; view with `ctrl+shift+e` or `/elixir status`
 - **Expert LSP bridge**: Full language server integration for diagnostics, hover, definitions, references, symbols, completions, rename, and formatting
@@ -174,7 +174,7 @@ This keeps formatting, commands, Expert LSP, and skills but disables automatic c
 
 ## Notes
 
-- Expert starts automatically when opening an Elixir project
+- Expert connects lazily on first LSP request (no startup overhead)
 - Diagnostics depend on Expert publishing `textDocument/publishDiagnostics`; indexing may still be in progress after startup
 - `rename` and `formatting` default to preview-only; pass `apply=true` or `--apply` to write edits
 - Credo is only active when the dependency is installed in the project

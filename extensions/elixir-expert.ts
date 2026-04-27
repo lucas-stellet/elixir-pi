@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { StringEnum } from "@mariozechner/pi-ai";
 import { Type } from "typebox";
-import { compactOutput, findMixRoot, parseArgs, resolveFromCwd } from "./lib/elixir-utils.ts";
+import { compactOutput, parseArgs, resolveFromCwd } from "./lib/elixir-utils.ts";
 import {
   formatExpertStatus,
   getExpertSession,
@@ -229,18 +229,6 @@ export default function elixirExpertExtension(pi: ExtensionAPI) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
       }
     },
-  });
-
-  pi.on("session_start", async (_event, ctx) => {
-    if (!(await findMixRoot(ctx.cwd, ctx.cwd))) return;
-
-    try {
-      const session = await getExpertSession(ctx.cwd);
-      await session.start();
-      ctx.ui.setStatus("pi-expert", "🔮 \x1b[35mExpert connected\x1b[0m");
-    } catch {
-      ctx.ui.setStatus("pi-expert", "🔮 \x1b[31mExpert failed\x1b[0m");
-    }
   });
 
   pi.on("session_shutdown", async () => {

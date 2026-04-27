@@ -1,0 +1,44 @@
+{
+  "name": "pi-elixir",
+  "version": "0.3.0",
+  "description": "Pi package for Elixir projects: Mix post-edit checks, Expert LSP bridge, commands, LLM tools, and Elixir/Phoenix/Ecto/OTP skills.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "elixir",
+    "phoenix",
+    "ecto",
+    "otp",
+    "mix",
+    "credo",
+    "expert",
+    "lsp"
+  ],
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./extensions/mix-format.ts",
+      "./extensions/mix-compile.ts",
+      "./extensions/mix-credo.ts",
+      "./extensions/elixir-tools.ts",
+      "./extensions/elixir-expert.ts",
+      "./extensions/elixir-session.ts"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-ai": "*",
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-ai": "*",
+    "typebox": "*",
+    "typescript": "^5.9.0",
+    "@types/node": "^24.0.0"
+  }
+}

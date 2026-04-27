@@ -29,7 +29,7 @@ pi -e /path/to/elixir-pi
 ## Prerequisites
 
 - `mix` on PATH
-- `expert` on PATH (for LSP features)
+- [`expert`](https://expert-lsp.org/) on PATH (for LSP features)
 
 ## Structure
 

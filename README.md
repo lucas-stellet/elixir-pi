@@ -6,6 +6,7 @@ Pi package for Elixir projects: Mix post-edit hooks, Expert LSP bridge, commands
 
 - **Auto-detection**: Detects Elixir projects via `mix.exs` and shows 🔮 Expert connection status
 - **Post-edit hooks**: Runs `mix format`, `mix compile`, and `mix credo` automatically after file edits
+- **Project health**: Track compile, credo, and test results automatically; view with `ctrl+shift+e` or `/elixir status`
 - **Expert LSP bridge**: Full language server integration for diagnostics, hover, definitions, references, symbols, completions, rename, and formatting
 - **LLM tools**: `elixir_mix` and `elixir_expert` tools callable by the agent
 - **Slash commands**: `/elixir` and `/expert` with argument completions
@@ -42,10 +43,11 @@ elixir-pi/
 │   ├── mix-credo.ts         # Post-edit: mix credo (cached availability check)
 │   ├── elixir-tools.ts      # elixir_mix tool + /elixir command
 │   ├── elixir-expert.ts     # elixir_expert tool + /expert command + auto-start
-│   ├── elixir-session.ts    # Project detection + system prompt guidance
+│   ├── elixir-session.ts    # Project detection + system prompt + health shortcut
 │   └── lib/
 │       ├── elixir-utils.ts      # Shared utilities (run commands, find mix root, etc.)
-│       └── expert-lsp-client.ts # LSP client for Expert language server
+│       ├── expert-lsp-client.ts # LSP client for Expert language server
+│       └── project-health.ts    # Health snapshot store + formatter
 └── skills/
     ├── elixir-thinking/     # General Elixir design patterns
     ├── phoenix-thinking/    # Phoenix and LiveView patterns
@@ -63,6 +65,7 @@ elixir-pi/
 /elixir compile             # Run mix compile --warnings-as-errors
 /elixir credo               # Run mix credo
 /elixir test [args...]      # Run mix test
+/elixir status              # Project health snapshot
 ```
 
 ### Expert LSP (`/expert`)
@@ -95,6 +98,7 @@ Positions are **1-based** for convenience. The extension converts to LSP's 0-bas
 | `compile` | Run mix compile --warnings-as-errors |
 | `credo` | Run mix credo (skips if not installed) |
 | `test` | Run mix test |
+| `status` | Project health snapshot |
 
 ### `elixir_expert`
 
@@ -130,6 +134,12 @@ The bridge in `extensions/lib/expert-lsp-client.ts` implements a JSON-RPC/LSP cl
 5. Caches `textDocument/publishDiagnostics` notifications
 6. Exposes LSP features as tools and commands
 7. Applies text-only workspace edits inside the project root
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `ctrl+shift+e` | Show Elixir project health status |
 
 ## Configuration
 

@@ -183,7 +183,7 @@ function splitExpertCommandFromEnv(): { command: string; args: string[] } {
 function makeInitializeParams(root: string): JsonObject {
   return {
     processId: process.pid,
-    clientInfo: { name: "elixir-pi", version: "0.3.0" },
+    clientInfo: { name: "elixir-pi", version: "0.4.0" },
     locale: "en",
     rootPath: root,
     rootUri: rootUri(root),

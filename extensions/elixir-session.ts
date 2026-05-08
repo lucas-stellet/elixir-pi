@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import * as path from "node:path";
 import { getExpertDiagnosticCounts, getExpertSessions } from "./lib/expert-lsp-client.ts";
 import { formatHealth, getHealth, type LiveInfo } from "./lib/project-health.ts";
